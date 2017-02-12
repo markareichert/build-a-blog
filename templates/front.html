@@ -67,8 +67,8 @@
         </label>
 
         <label>
-            <div>art</div>
-            <textarea name="art">{{art}}</textarea>
+            <div>Blog</div>
+            <textarea name="blog">{{blog}}</textarea>
         </label>
 
         <div class="error">{{error}}</div>
@@ -78,10 +78,10 @@
 
     <hr>
 
-    {% for art in arts %}
+    {% for blog in blogs %}
         <div class="art">
-            <div class="art-title">{{art.title}}</div>
-            <pre class="art-body">{{art.art}}</pre>
+            <h2 class="blog-title">{{blog.title}}</h2>
+            <p class="blog-body">{{blog.blog}}</p>
         </div>
     {% endfor %}
 </body>
