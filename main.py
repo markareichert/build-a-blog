@@ -36,32 +36,42 @@ class Handler(webapp2.RequestHandler):
 
 class Blog(db.Model):
     title = db.StringProperty(required = True)
-    blog = db.TextProperty(required = True)
+    body = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
 
 class MainPage(Handler):
-    def render_front(self, title="", blog="", error=""):
+    def get(self):
         blogs = db.GqlQuery("SELECT * FROM Blog ORDER BY created DESC LIMIT 5")
 
-        self.render("front.html", title=title, blog=blog, error=error, blogs=blogs)
+        if blogs:
+            self.render("front.html", blogs=blogs)
 
+class NewPostHandler(Handler):
     def get(self):
-        self.render_front()
+        self.render("newpost.html")
 
     def post(self):
         title = self.request.get("title")
-        blog = self.request.get("blog")
+        body = self.request.get("body")
 
-        if title and blog:
-            b = Blog(title = title, blog = blog)
+        if title and body:
+            b = Blog(title = title, body = body)
             b.put()
 
-            self.redirect("/")
+            self.redirect("/blog")
             return
         else:
             error = "we need both a title and some blog text"
-            self.render_front(title, blog, error)
+            self.render("newpost.html", title=title, body=body, error=error)
+
+class ViewPostHandler(webapp2.RequestHandler):
+    def get(self, id):
+        pass #replace this with some code to handle the request
+
 
 app = webapp2.WSGIApplication([
-    ('/', MainPage)
+    webapp2.Route(r'/', handler=MainPage),
+    webapp2.Route(r'/blog', handler=MainPage),
+    webapp2.Route(r'/blog/newpost', handler=NewPostHandler),
+    webapp2.Route(r'/blog/<id:\d+>', handler=ViewPostHandler)
 ], debug=True)
