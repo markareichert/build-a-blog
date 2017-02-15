@@ -41,10 +41,10 @@ class Blog(db.Model):
 
 class MainPage(Handler):
     def get(self):
-        blogs = db.GqlQuery("SELECT * FROM Blog ORDER BY created DESC LIMIT 5")
+        blogposts = db.GqlQuery("SELECT * FROM Blog ORDER BY created DESC LIMIT 5")
 
-        if blogs:
-            self.render("front.html", blogs=blogs)
+        if blogposts:
+            self.render("front.html", blogs=blogposts)
 
 class NewPostHandler(Handler):
     def get(self):
@@ -58,16 +58,16 @@ class NewPostHandler(Handler):
             b = Blog(title = title, body = body)
             b.put()
 
-            self.redirect("/blog")
+            self.redirect('/blog/%s' % str(b.key().id()))
             return
         else:
             error = "we need both a title and some blog text"
             self.render("newpost.html", title=title, body=body, error=error)
 
-class ViewPostHandler(webapp2.RequestHandler):
+class ViewPostHandler(Handler):
     def get(self, id):
-        pass #replace this with some code to handle the request
-
+        b = Blog.get_by_id(int(id))
+        self.render("viewpost.html", blog=b)
 
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/', handler=MainPage),
